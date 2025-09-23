@@ -8,7 +8,7 @@ fi
 
 NEW_NAME=$1
 GENERIC_NAME="\[name-generic\]"
-GENERIC_NAME_UNDERSCORE=$(echo "$GENERIC_NAME" | tr '-' '_')
+NEW_NAME_UNDERSCORE=$(echo "$NEW_NAME" | tr '-' '_')
 
 echo "🚀 Renomeando projeto para: $NEW_NAME"
 
@@ -24,7 +24,8 @@ done
 
 # Substitui [name-generic] no webpack.config.ts usando "_" em vez de "-"
 if [ -f webpack.config.ts ]; then
-  sed -i "s/\[name-generic\]/$PROJECT_NAME_UNDERSCORE/g" webpack.config.ts
+  echo "📝 Atualizando webpack.config.ts (usando underscores)..."
+  sed -i "s/$GENERIC_NAME/$NEW_NAME_UNDERSCORE/g" webpack.config.ts
 fi
 
 # Pasta src/app (caso exista algo com [name-generic])
