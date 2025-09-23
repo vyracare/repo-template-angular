@@ -29,10 +29,9 @@ jobs:
 
       - name: Criar repositório do template
         run: |
-          gh repo create "$PROJECT_NAME" \
+          gh repo create vyracare/$PROJECT_NAME \
             --private \
             --template "vyracare/repo-template-angular" \
-            --org vyracare \
             --clone
 
       - name: Rodar script de rename
