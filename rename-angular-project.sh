@@ -7,12 +7,13 @@ if [ -z "$1" ]; then
 fi
 
 NEW_NAME=$1
-GENERIC_NAME="\[nome-generico\]"
+GENERIC_NAME="\[name-generic\]"
+GENERIC_NAME_UNDERSCORE=$(echo "$GENERIC_NAME" | tr '-' '_')
 
 echo "🚀 Renomeando projeto para: $NEW_NAME"
 
 # Arquivos principais
-FILES=("angular.json" "package.json" "webpack.config.js" "nx.json" "tsconfig.json")
+FILES=("angular.json" "package.json" "nx.json" "tsconfig.json")
 
 for FILE in "${FILES[@]}"; do
   if [ -f "$FILE" ]; then
@@ -21,19 +22,24 @@ for FILE in "${FILES[@]}"; do
   fi
 done
 
-# Pasta src/app (caso exista algo com [nome-generico])
+# Substitui [name-generic] no webpack.config.ts usando "_" em vez de "-"
+if [ -f webpack.config.ts ]; then
+  sed -i "s/\[name-generic\]/$PROJECT_NAME_UNDERSCORE/g" webpack.config.ts
+fi
+
+# Pasta src/app (caso exista algo com [name-generic])
 if [ -d "src/app" ]; then
   find src/app -type f -exec sed -i "s/$GENERIC_NAME/$NEW_NAME/g" {} +
 fi
 
-# Renomear diretórios que usam [nome-generico]
-if [ -d "projects/[nome-generico]" ]; then
-  echo "📂 Renomeando pasta projects/[nome-generico] para projects/$NEW_NAME"
-  mv "projects/[nome-generico]" "projects/$NEW_NAME"
+# Renomear diretórios que usam [name-generic]
+if [ -d "projects/[name-generic]" ]; then
+  echo "📂 Renomeando pasta projects/[name-generic] para projects/$NEW_NAME"
+  mv "projects/[name-generic]" "projects/$NEW_NAME"
 fi
 
-# Ajustar imports que referenciem [nome-generico]
-grep -rl "\[nome-generico\]" . | while read -r file; do
+# Ajustar imports que referenciem [name-generic]
+grep -rl "\[name-generic\]" . | while read -r file; do
   echo "🔍 Corrigindo import em $file"
   sed -i "s/$GENERIC_NAME/$NEW_NAME/g" "$file"
 done

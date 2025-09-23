@@ -3,7 +3,7 @@
 	"version": 1,
 	"newProjectRoot": "projects",
 	"projects": {
-		"[nome-generico]": {
+		"[name-generic]": {
 			"projectType": "application",
 			"schematics": {
 				"@schematics/angular:component": {
@@ -30,7 +30,7 @@
 							"src/styles.scss"
 						],
 						"main": "src/main.ts",
-						"outputPath": "dist/[nome-generico]",
+						"outputPath": "dist/[name-generic]",
 						"index": "src/index.html",
 						"extraWebpackConfig": "webpack.config.js",
 						"commonChunk": false
@@ -64,11 +64,11 @@
 					"builder": "ngx-build-plus:dev-server",
 					"configurations": {
 						"production": {
-							"buildTarget": "[nome-generico]:build:production",
+							"buildTarget": "[name-generic]:build:production",
 							"extraWebpackConfig": "webpack.prod.config.js"
 						},
 						"development": {
-							"buildTarget": "[nome-generico]:build:development"
+							"buildTarget": "[name-generic]:build:development"
 						}
 					},
 					"defaultConfiguration": "development",

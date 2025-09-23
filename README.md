@@ -1,2 +1,3 @@
-# repo-template-angular
-Repositório de pré configurações para repositórios de aplicações angular
+# [name-generic]
+
+Repositório [name-generic]

@@ -1,5 +1,5 @@
 {
-  "name": "[nome-generico]",
+  "name": "[name-generic]",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:[nome-generico]": "node dist/[nome-generico]/server/server.mjs",
+    "serve:ssr:[name-generic]": "node dist/[name-generic]/server/server.mjs",
     "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
   },
   "prettier": {
