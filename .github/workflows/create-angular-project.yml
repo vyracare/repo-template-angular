@@ -5,32 +5,34 @@ on:
     types: [opened]
 
 jobs:
-  create-angular-repo:
+  create-repo:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.title, 'create')
+    if: startsWith(github.event.issue.title, 'create:')
     env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      GH_TOKEN: ${{ secrets.PAT_TOKEN }} # Token com escopo repo
     steps:
-      - name: Set project name
-        id: set-project
+      - name: Extrair nome do projeto da issue
+        id: extract
         run: |
-          # Extrai o nome do projeto do título da issue
-          PROJECT_NAME=$(echo "${GITHUB_EVENT_ISSUE_TITLE}" | sed 's/create //')
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          PROJECT_NAME=$(echo "$ISSUE_TITLE" | sed 's/^create://')
           echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+          echo "project-name=$PROJECT_NAME" >> $GITHUB_OUTPUT
 
-      - name: Create repository from template
+      - name: Criar repositório do template
         run: |
-          gh repo create $PROJECT_NAME --private --template "vyracare/repo-template-angular"
-          cd $PROJECT_NAME
+          gh repo create $PROJECT_NAME \
+            --private \
+            --template "vyracare/repo-template-angular" \
+            --clone
 
-      - name: Rename Angular project
+      - name: Rodar script de rename
         run: |
           cd $PROJECT_NAME
           chmod +x rename-angular-project.sh
-          ./rename-angular-project.sh "$PROJECT_NAME"
+          ./rename-angular-project.sh $PROJECT_NAME
 
-      - name: Commit and push changes
+      - name: Commit e push das mudanças
         run: |
           cd $PROJECT_NAME
           git config user.name "github-actions[bot]"
