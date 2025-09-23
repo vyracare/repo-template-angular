@@ -55,6 +55,7 @@ jobs:
       - name: Comentar na issue
         run: |
           gh issue comment ${{ github.event.issue.number }} \
+            --repo vyracare/repo-template-angular \
             --body "✅ O repositório **$PROJECT_NAME** foi criado com sucesso: https://github.com/vyracare/$PROJECT_NAME"
 
       - name: Atualizar título da issue
