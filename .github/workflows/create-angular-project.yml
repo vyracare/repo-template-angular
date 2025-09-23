@@ -5,38 +5,38 @@ on:
     types: [opened]
 
 jobs:
-  create-repo:
+  create-angular-repo:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.issue.title, 'create:')
+    if: contains(github.event.issue.title, 'create')
     env:
-      GH_TOKEN: ${{ secrets.PAT_TOKEN }} # Token com escopo repo
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
     steps:
-      - name: Extrair nome do projeto da issue
-        id: extract
+      - name: Set project name
+        id: set-project
         run: |
-          ISSUE_TITLE="${{ github.event.issue.title }}"
-          PROJECT_NAME=$(echo "$ISSUE_TITLE" | sed 's/^create://')
+          # Extrai o nome do projeto do título da issue
+          PROJECT_NAME=$(echo "${GITHUB_EVENT_ISSUE_TITLE}" | sed 's/create //')
           echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
-          echo "project-name=$PROJECT_NAME" >> $GITHUB_OUTPUT
 
-      - name: Criar repositório do template
+      - name: Create repository from template
         run: |
-          gh repo create $PROJECT_NAME \
-            --private \
-            --template "vyracare/repo-template-angular" \
-            --clone
+          gh repo create $PROJECT_NAME --private --template "vyracare/repo-template-angular"
+          cd $PROJECT_NAME
 
-      - name: Rodar script de rename
+      - name: Rename Angular project
         run: |
           cd $PROJECT_NAME
           chmod +x rename-angular-project.sh
-          ./rename-angular-project.sh $PROJECT_NAME
+          ./rename-angular-project.sh "$PROJECT_NAME"
 
-      - name: Commit e push das mudanças
+      - name: Commit and push changes
         run: |
           cd $PROJECT_NAME
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Usa token para autenticação no push
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/vyracare/$PROJECT_NAME.git
           git add .
           git commit -m "chore: rename Angular project to $PROJECT_NAME"
           git push origin main
