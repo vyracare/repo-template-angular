@@ -22,10 +22,10 @@ for FILE in "${FILES[@]}"; do
   fi
 done
 
-# Substitui [name-generic] no webpack.config.ts usando "_" em vez de "-"
-if [ -f webpack.config.ts ]; then
-  echo "📝 Atualizando webpack.config.ts (usando underscores)..."
-  sed -i "s/$GENERIC_NAME/$NEW_NAME_UNDERSCORE/g" webpack.config.ts
+# Substitui [name-generic] no webpack.config.js usando "_" em vez de "-"
+if [ -f webpack.config.js ]; then
+  echo "📝 Atualizando webpack.config.js (usando underscores)..."
+  sed -i "s/$GENERIC_NAME/$NEW_NAME_UNDERSCORE/g" webpack.config.js
 fi
 
 # Pasta src/app (caso exista algo com [name-generic])

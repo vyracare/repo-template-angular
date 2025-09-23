@@ -58,7 +58,3 @@ jobs:
             --repo vyracare/repo-template-angular \
             --body "✅ O repositório **$PROJECT_NAME** foi criado com sucesso: https://github.com/vyracare/$PROJECT_NAME"
 
-      - name: Atualizar título da issue
-        run: |
-          gh issue edit ${{ github.event.issue.number }} \
-            --title "create: $PROJECT_NAME"
