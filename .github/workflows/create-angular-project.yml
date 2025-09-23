@@ -9,19 +9,27 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.event.issue.title, 'create:')
     env:
-      GH_TOKEN: ${{ secrets.PAT_TOKEN }} # Token com escopo repo
+      GH_TOKEN: ${{ secrets.PAT_TOKEN }}
     steps:
       - name: Extrair nome do projeto da issue
         id: extract
         run: |
           ISSUE_TITLE="${{ github.event.issue.title }}"
           PROJECT_NAME=$(echo "$ISSUE_TITLE" | sed 's/^create://')
+
+          # Verifica se o repositório já existe
+          if gh repo view "vyracare/$PROJECT_NAME" >/dev/null 2>&1; then
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+            PROJECT_NAME="${PROJECT_NAME}-${TIMESTAMP}"
+            echo "O repositório original já existe. Novo nome: $PROJECT_NAME"
+          fi
+
           echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
           echo "project-name=$PROJECT_NAME" >> $GITHUB_OUTPUT
 
       - name: Criar repositório do template
         run: |
-          gh repo create $PROJECT_NAME \
+          gh repo create "$PROJECT_NAME" \
             --private \
             --template "vyracare/repo-template-angular" \
             --clone
@@ -37,13 +45,17 @@ jobs:
           cd $PROJECT_NAME
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Usa token para autenticação no push
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/vyracare/$PROJECT_NAME.git
           git add .
-          git commit -m "chore: rename Angular project to $PROJECT_NAME"
+          git commit -m "chore: rename Angular project to $PROJECT_NAME" || echo "Nada para commitar"
           git push origin main
 
       - name: Comentar na issue
         run: |
           gh issue comment ${{ github.event.issue.number }} \
             --body "✅ O repositório **$PROJECT_NAME** foi criado com sucesso: https://github.com/vyracare/$PROJECT_NAME"
+
+      - name: Atualizar título da issue
+        run: |
+          gh issue edit ${{ github.event.issue.number }} \
+            --title "create: $PROJECT_NAME"
