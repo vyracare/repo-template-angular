@@ -46,6 +46,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/vyracare/$PROJECT_NAME.git
+          rm -f rename-angular-project.sh create-angular-project.yml
           git add .
           git commit -m "chore: rename Angular project to $PROJECT_NAME" || echo "Nada para commitar"
           git push origin main
