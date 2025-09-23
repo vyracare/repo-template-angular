@@ -1,0 +1,58 @@
+name: Create Project Angular MFE
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-project:
+    if: startsWith(github.event.issue.title, 'create:')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout template
+        uses: actions/checkout@v4
+
+      - name: Extract project name from issue
+        run: |
+          PROJECT_NAME=$(echo "${{ github.event.issue.title }}" | sed 's/create://g' | tr -d '[:space:]')
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+          echo "📦 Nome do projeto detectado: $PROJECT_NAME"
+
+      - name: Create new repository from template
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          gh repo create $PROJECT_NAME --private --template "${{ github.repository }}" --confirm
+
+      - name: Clone new repo
+        run: |
+          git clone "https://github.com/${{ github.repository_owner }}/$PROJECT_NAME.git"
+          cd $PROJECT_NAME
+          cp -R ../* .
+          cp -R ../.github .
+
+      - name: Rename Angular project files
+        run: |
+          cd $PROJECT_NAME
+          chmod +x ../rename-angular-project.sh
+          ../rename-angular-project.sh $PROJECT_NAME
+
+      - name: Commit and push changes
+        run: |
+          cd $PROJECT_NAME
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "chore: initialize project $PROJECT_NAME"
+          git push origin main
+
+      - name: Comment on issue
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --body "✅ Projeto criado: https://github.com/${{ github.repository_owner }}/$PROJECT_NAME"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
