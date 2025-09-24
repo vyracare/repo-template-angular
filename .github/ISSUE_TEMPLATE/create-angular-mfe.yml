@@ -8,7 +8,7 @@ body:
     attributes:
       label: Nome do projeto
       description: 'Digite o nome do projeto no formato kebab-case (ex: `vyracare-app-profile-mfe`)'
-      placeholder: vyracare-app-profile-mfe
+      placeholder: vyracare-app-[nome-do-projeto]-mfe
     validations:
       required: true
 
